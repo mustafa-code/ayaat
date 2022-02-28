@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/src/utils/utils.dart';
 import 'package:flutter_app/src/widgets/custom_app_bar.dart';
 import 'package:flutter_app/src/widgets/custom_button.dart';
 
 import 'home.dart';
 
 class Send extends StatelessWidget {
-  const Send({Key? key}) : super(key: key);
+  final Map data;
+  const Send({Key? key, required this.data}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +40,23 @@ class Send extends StatelessWidget {
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
+                            children: [
                               Text(
-                                "Application file.apk",
-                                style: TextStyle(
+                                data["title"],
+                                style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
                               Text(
-                                "asendner@gmail.com",
-                                style: TextStyle(
+                                data["email"],
+                                style: const TextStyle(
                                   color: Colors.grey,
+                                ),
+                              ),
+                              Text(
+                                "Encrypted file size: ${getFileSize(int.tryParse("${data["size_after"]}") ?? 0)}",
+                                style: const TextStyle(
                                 ),
                               ),
                             ],
@@ -57,20 +64,21 @@ class Send extends StatelessWidget {
                         ),
                       ],
                     ),
+                    const SizedBox(height: 32),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
+                        children: [
                           Text(
-                            "text messages sent while the file is shown here",
-                            style: TextStyle(
+                            data["message"],
+                            style: const TextStyle(
                               fontSize: 18,
                             ),
                           ),
                           Text(
-                            "20/10/2021 14:21:32",
-                            style: TextStyle(
+                            data["creation_date"],
+                            style: const TextStyle(
                               color: Colors.grey,
                               fontSize: 18,
                             ),

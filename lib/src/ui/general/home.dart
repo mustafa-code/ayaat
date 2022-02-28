@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app/src/ui/fragment/main_page.dart';
 import 'package:flutter_app/src/ui/fragment/new_email.dart';
 import 'package:flutter_app/src/ui/fragment/profile.dart';
-import 'package:flutter_app/src/ui/fragment/saved.dart';
 import 'package:flutter_app/src/widgets/drawer_item.dart';
 import 'package:flutter_app/src/widgets/drawer_user.dart';
 
@@ -161,7 +160,7 @@ class _HomeState extends State<Home> {
             },
           ),
           const Profile(),
-          const Saved(),
+          Container(),
         ][selectedIndex],
       ),
       bottomNavigationBar: Container(
