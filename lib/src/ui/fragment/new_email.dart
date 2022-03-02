@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app/src/resources/api_provider.dart';
@@ -11,6 +12,7 @@ import 'package:flutter_app/src/ui/general/send.dart';
 import 'package:flutter_app/src/utils/dialog_utils.dart';
 import 'package:flutter_app/src/utils/utils.dart';
 import 'package:flutter_app/src/widgets/custom_button.dart';
+import 'package:open_file/open_file.dart';
 
 class NewEmail extends StatefulWidget {
   const NewEmail({Key? key}) : super(key: key);
@@ -20,10 +22,10 @@ class NewEmail extends StatefulWidget {
 }
 
 class _NewEmailState extends State<NewEmail> {
-  var titleController = TextEditingController();
-  var messageController = TextEditingController();
+  var titleController = TextEditingController(text: "Title");
+  var messageController = TextEditingController(text: "Message here");
   var fileController = TextEditingController();
-  var emailController = TextEditingController();
+  var emailController = TextEditingController(text: "ayaat@gmail.com");
   var keyController = TextEditingController();
   File? file;
 
@@ -283,16 +285,24 @@ class _NewEmailState extends State<NewEmail> {
                           String fileName = file!.path.split("/").last;
                           DateTime start = DateTime.now();
                           String encryptedPath = EncryptData.encryptFile(file!.path, key);
+
+                          // String? decryptedPath = EncryptData.decryptFile(encryptedPath, key);
+                          // OpenFile.open(decryptedPath);
+                          //
+                          // return;
                           log("encryptedPath: {$encryptedPath}");
                           File encrypted = File(encryptedPath);
-                          String fileContent = getBase64FormatFile(encrypted.path);
+
+
+                          String fileContent = await getBase64FormatFile(encrypted.path);
                           int sizeAfter = await encrypted.length();
                           log("encrypted.length(): ${await encrypted.length()}");
                           DateTime end = DateTime.now();
 
                           var apiProvider = ApiProvider();
                           Map<String, dynamic> request = {
-                            "file_content": fileContent,
+                            // "file_content": fileContent,
+                            'file': await MultipartFile.fromFile(encrypted.path, filename: encrypted.path.split("/").last),
                             "start_enc": start.toString(),
                             "end_enc": end.toString(),
                             "size_before": sizeBefore,

@@ -50,7 +50,7 @@ class ApiProvider {
         // log("request: ${json.encode(request)}");
         response = await dio.post(
           path,
-          data: json.encode(request),
+          data: FormData.fromMap(request),
           cancelToken: cancelToken,
           onSendProgress: (int sent, int total) {},
           onReceiveProgress: (int receive, int total){},

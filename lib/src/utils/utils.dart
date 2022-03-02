@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'dart:math';
 
-String getBase64FormatFile(String path) {
+Future<String> getBase64FormatFile(String path) async {
   File file = File(path);
-  List<int> fileInByte = file.readAsBytesSync();
+  List<int> fileInByte = await file.readAsBytes();
   String fileInBase64 = base64Encode(fileInByte);
   return fileInBase64;
 }

@@ -11,6 +11,7 @@ import 'package:flutter_app/src/utils/dialog_utils.dart';
 import 'package:flutter_app/src/utils/utils.dart';
 import 'package:flutter_app/src/widgets/custom_app_bar.dart';
 import 'package:flutter_app/src/widgets/custom_button.dart';
+import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FilePage extends StatefulWidget {
@@ -148,27 +149,31 @@ class _FilePageState extends State<FilePage> {
                           child: CustomButton(
                             label: "Open",
                             onPressed: () async {
-                              Directory appDocDir = await getApplicationDocumentsDirectory();
-
                               Directory dir = await getTemporaryDirectory();
 
                               String path = "${dir.path}/${widget.data["id"]}-${widget.data["file_name"]}.aes";
                               File file = File(path);
                               log("widget.data[\"enc_key\"]: ${widget.data["enc_key"]}");
-                              if(await file.exists()){
-                                log("file: ${await file.length()}");
-                                String cry = EncryptData.decryptFile(path, widget.data["enc_key"]);
-                                log("cry: $cry");
-                                return;
+                              String? result = path;
+                              if(!await file.exists()){
+                                showLoadingDialog(context);
+                                result = await downloadFile(widget.data["file_url"], path);
+                                Navigator.of(context).pop();
                               }
                               log("path: $path");
-                              String? result = await downloadFile(widget.data["file_url"], path);
                               if(result == null){
                                 showCustomErrorDialog(context, "Permission", "Permissions not granted", "Ok");
                               } else {
+                                File file = File(result);
+                                log("file.length: ${await file.length()}");
                                 log("result: $result");
                                 log("widget.data[\"enc_key\"]: ${widget.data["enc_key"]}");
-                                String cry = EncryptData.decryptFile(result, widget.data["enc_key"]);
+                                showLoadingDialog(context);
+                                String? cry = EncryptData.decryptFile(result, widget.data["enc_key"]);
+                                Navigator.of(context).pop();
+                                if(cry != null){
+                                  OpenFile.open(cry);
+                                }
                                 log("cry: $cry");
                               }
                             },
@@ -201,8 +206,11 @@ class _FilePageState extends State<FilePage> {
       var response = await request.close();
       if(response.statusCode == 200) {
         var bytes = await consolidateHttpClientResponseBytes(response);
-        filePath = '$path';
+        filePath = path;
         file = File(filePath);
+        if(await file.exists()){
+          await file.delete();
+        }
         file = await file.create();
         await file.writeAsBytes(bytes);
         return filePath;

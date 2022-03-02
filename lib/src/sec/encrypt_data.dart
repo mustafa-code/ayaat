@@ -15,9 +15,9 @@ class EncryptData {
   }
 
   static String encryptFile(String path, String password) {
-    AesCrypt crypt = AesCrypt();
+    AesCrypt crypt = AesCrypt(password);
+    crypt.aesSetMode(AesMode.cbc);
     crypt.setOverwriteMode(AesCryptOwMode.on);
-    crypt.setPassword(password);
     String encFilepath = "";
     try {
       encFilepath = crypt.encryptFileSync(path);
@@ -34,24 +34,23 @@ class EncryptData {
     return encFilepath;
   }
 
-  static String decryptFile(String path, String password) {
-    AesCrypt crypt = AesCrypt();
+  static String? decryptFile(String path, String password) {
+    AesCrypt crypt = AesCrypt(password);
+    crypt.aesSetMode(AesMode.cbc);
     crypt.setOverwriteMode(AesCryptOwMode.on);
-    crypt.setPassword(password);
     String decFilepath = "";
     try {
       decFilepath = crypt.decryptFileSync(path);
       log('The decryption has been completed successfully.');
       log('Decrypted file 1: $decFilepath');
       log('File content: ' + File(decFilepath).path);
+      return decFilepath;
     } on AesCryptException catch (e) {
       if (e.type == AesCryptExceptionType.destFileExists) {
         log('The decryption has been completed unsuccessfully.');
         log(e.message);
-      } else{
-        return 'ERROR';
       }
     }
-    return decFilepath;
+    return null;
   }
 }
