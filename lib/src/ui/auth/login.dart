@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/src/resources/api_provider.dart';
 import 'package:flutter_app/src/ui/auth/register.dart';
+import 'package:flutter_app/src/ui/fragment/main_page.dart';
 import 'package:flutter_app/src/ui/general/home.dart';
 import 'package:flutter_app/src/utils/dialog_utils.dart';
 import 'package:flutter_app/src/widgets/custom_button.dart';
@@ -13,6 +15,12 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  String? emailError;
+  String? passwordError;
+  bool showPassword = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,20 +44,26 @@ class _LoginState extends State<Login> {
                 child: Column(
                   children: [
                     TextFormField(
+                      controller: emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
+                      decoration: InputDecoration(
                         hintText: "E-mail",
+                        errorText: emailError,
                       ),
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      obscureText: true,
+                      controller: passwordController,
+                      obscureText: !showPassword,
                       decoration: InputDecoration(
+                        errorText: passwordError,
                         hintText: "Password",
                         suffixIcon: IconButton(
                           icon: const FaIcon(FontAwesomeIcons.eyeSlash, size: 18),
                           onPressed: () {
-
+                            setState(() {
+                              showPassword = !showPassword;
+                            });
                           },
                         ),
                       ),
@@ -141,11 +155,34 @@ class _LoginState extends State<Login> {
   }
 
   goHome() async {
-    showLoadingDialog(context);
-    await Future.delayed(const Duration(seconds: 2));
-    Navigator.of(context).pop();
-    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
-      builder: (context) => Home(),
-    ), (route) => false);
+    setState(() {
+      emailError = null;
+      passwordError = null;
+    });
+    if(emailController.text.trim().isEmpty){
+      setState(() {
+        emailError = "Email is required";
+      });
+    } else if(passwordController.text.trim().isEmpty){
+      setState(() {
+        passwordError = "Password is required";
+      });
+    } else {
+      final api = ApiProvider();
+      showLoadingDialog(context);
+      Map<String, dynamic> response = await api.doRequest("login.php", Method.post, request: {
+        "email": emailController.text.trim(),
+        "password": passwordController.text.trim(),
+      });
+      Navigator.of(context).pop();
+      if(response.containsKey("success") && response["success"]){
+        authUser = response["user"];
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+          builder: (context) => const Home(),
+        ), (route) => false);
+      } else {
+        showCustomErrorDialog(context, "Login Error", response["message"] ?? "Fail to login, check server IP address", "OK");
+      }
+    }
   }
 }

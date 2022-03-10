@@ -8,6 +8,8 @@ import 'package:flutter_app/src/utils/utils.dart';
 import 'package:flutter_app/src/widgets/custom_app_bar.dart';
 import 'package:lottie/lottie.dart';
 
+Map? authUser;
+
 class MainPage extends StatefulWidget {
   final VoidCallback onOpenDrawer;
   final HomeStatus homeStatus;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app/src/ui/fragment/main_page.dart';
 
 class CustomAppBar extends StatelessWidget {
   final Widget leading;
@@ -32,17 +33,17 @@ class CustomAppBar extends StatelessWidget {
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
-                          "Ayaat Ehab",
-                          style: TextStyle(
+                          authUser!["name"],
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
                         Text(
-                          "Student account",
-                          style: TextStyle(
+                          authUser!["email"],
+                          style: const TextStyle(
                             color: Colors.grey,
                           ),
                         ),

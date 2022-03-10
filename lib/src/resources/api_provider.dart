@@ -41,7 +41,7 @@ class ApiProvider {
   Future<Map<String, dynamic>> doRequest(String path, Method method,
       {Map<String, dynamic>? request}) async {
 
-    dio.options.baseUrl = "http://192.168.38.221/sec/api/";
+    dio.options.baseUrl = "http://192.168.179.221/sec/api/";
 
     request ??= {};
     try {
